@@ -1,0 +1,18 @@
+ sequenceDiagram
+    participant ManuelClaim as Manual Message Claim
+    participant Swift_Core_Service as Swift Core Service
+    participant Parser as Parser
+    participant Rules as Route Rules
+    participant Migration as Incoming Swift Migration
+    participant Create_DB_Record as Create DB Record
+    participant Create_History_Record as Create History Record
+    participant DB_Storage as DB Storage
+    participant History_DB_Storage as History DB Storage
+
+    ManuelClaim ->> Swift_Core_Service: Claim 
+    Swift_Core_Service ->> Parser: Create MX or MT Obj
+    Parser ->> Migration: Migration
+
+    Migration ->> DB_Storage: Insert status ready for order creation
+    Migration ->> History_DB_Storage: Insert
+    

@@ -1,0 +1,26 @@
+ sequenceDiagram
+    participant Queue as Swift Message Queue
+    participant Listener as Incoming Swift Message Listener
+    participant Parser as Parser
+    participant Rules as Route Rules
+    participant Migration as Incoming Swift Migration
+    participant Create_DB_Record as Create DB Record
+    participant Create_History_Record as Create History Record
+    participant DB_Storage as DB Storage
+    participant History_DB_Storage as History DB Storage
+
+
+    Queue ->> Listener: New Message
+    Listener ->> Parser: Create MX or MT Obj
+    Parser ->> Rules: Check Route Rules
+    Rules ->> Migration: Migration
+    Migration ->> Queue: Claim Request
+    Queue ->> Migration: Claim Response
+    
+    alt Successful Claim Response
+        Migration ->> DB_Storage: Insert status ready for order creation
+        Migration ->> History_DB_Storage: Insert
+    else Failed Claim Response
+        Migration ->> History_DB_Storage: Insert as a Claim Failed to history
+    end
+    ### Herhangi bir adımda Error oluşursa claim etme ama diğer mesajları işlemeye devame et.

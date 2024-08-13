@@ -1,0 +1,11 @@
+ sequenceDiagram
+    participant MessageRelease as Message Release
+    participant Queue as Swift Message Queue
+    participant Prepare_DB_Storage as Prepare DB Storage
+    participant Order_Cancellation as Order Cancellation
+    participant Order_DB_Storage as Order DB Storage
+
+    MessageRelease ->> Queue: Release Request 
+    MessageRelease ->> Prepare_DB_Storage: Update Status Release
+    MessageRelease ->> Order_Cancellation: Order Cancel Request
+    Order_Cancellation ->> Order_DB_Storage: Order Cancel Request
