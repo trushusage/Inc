@@ -1,5 +1,4 @@
 sequenceDiagram
-	
  	Transaction_Reason_Decision_Batch ->> Order_DB: GetAll_TransactionReason_Empty_Records
     Order_DB ->> Transaction_Reason_Decision_Batch: Response
     Transaction_Reason_Decision_Batch ->> Order_DB: Update
@@ -7,7 +6,6 @@ sequenceDiagram
 ----------------------------------------------------------------------------------------------------
 
 sequenceDiagram
-	
  	STP_NonSTP_Decision_Batch ->> Order_DB: GetAll_STP_Empty_Records
     Order_DB ->> STP_NonSTP_Decision_Batch: Response
     STP_NonSTP_Decision_Batch ->> Order_DB: Update
@@ -15,7 +13,6 @@ sequenceDiagram
 ----------------------------------------------------------------------------------------------------
 
 sequenceDiagram
-	
  	Order_Execution_Batch ->> Order_DB: GetAll_Transaction_Reason_Empty_Records
     Order_DB ->> Order_Execution_Batch: Records
 
