@@ -1,28 +1,55 @@
 sequenceDiagram
- 	Transaction_Reason_Decision_Batch ->> Order_DB: GetAll_TransactionReason_Empty_Records
-    Order_DB ->> Transaction_Reason_Decision_Batch: Response
-    Transaction_Reason_Decision_Batch ->> Order_DB: Update
-
-----------------------------------------------------------------------------------------------------
-
-sequenceDiagram
- 	STP_NonSTP_Decision_Batch ->> Order_DB: GetAll_STP_Empty_Records
-    Order_DB ->> STP_NonSTP_Decision_Batch: Response
-    STP_NonSTP_Decision_Batch ->> Order_DB: Update
-
-----------------------------------------------------------------------------------------------------
-
-sequenceDiagram
- 	Order_Execution_Batch ->> Order_DB: GetAll_Transaction_Reason_Empty_Records
+ 	Order_Execution_Batch ->> Order_DB_Storage: GetAll_Transaction_Reason_Empty_Records
     Order_DB ->> Order_Execution_Batch: Records
 
-    Order_Execution_Batch ->> Enrichment_and_Validations: Check
+    %% Enrichment
+    Order_Execution_Batch ->> Enrichment: Request
+        Enrichment ->> CalculateCommission: getCommission
+        Enrichment ->> Transaction_Reason_Enrichment: Transaction_Reason_Enrichment
+        Enrichment ->> StatisticCodeService: GetStatisticCode
+    Enrichment ->> Order_DB_Storage: insert/Update
 
-    Order_Execution_Batch ->> Order_DB: Update
- 
-    Order_Execution_Batch ->> Transfer_DB: Insert
+    %% Validations
+    Order_Execution_Batch ->> Validations: Check
+        Validations ->> NostroAccCheck: Check_Nostro_Closed
+            NostroAccCheck ->> Validations: Response
+        Validations ->> ValorCheck: Geri_Valorlu_Control
+            ValorCheck ->> Validations: Response
+        Validations ->> isPayable: check
+            isPayable ->> Validations: Response
+    Validations ->> Order_DB_Storage: insert/Update
 
-----------------------------------------------------------------------------------------------------
+    %% Transfer_Creation
+    Order_Execution_Batch ->> Transfer_Creation: execute 
+    Transfer_Creation ->> Transfer_DB: Insert
+
+
+sequenceDiagram
+ 	Order_Execution_Batch ->> Order_DB_Storage: GetAll_Transaction_Reason_Empty_Records
+    Order_DB ->> Order_Execution_Batch: Records
+
+    %% Enrichment
+    Order_Execution_Batch ->> Enrichment: Request
+        Enrichment ->> CalculateCommission: getCommission
+        Enrichment ->> StatisticCodeService: GetStatisticCode
+        Enrichment ->> Transaction_Reason_Enrichment: Transaction_Reason_Enrichment
+    Enrichment ->> Order_DB_Storage: insert/Update
+
+
+sequenceDiagram
+ 	Order_Execution_Batch ->> Order_DB_Storage: GetAll_Transaction_Reason_Empty_Records
+    Order_DB ->> Order_Execution_Batch: Records
+
+    %% Validations
+    Order_Execution_Batch ->> Validations: Check
+        Validations ->> NostroAccCheck: Check_Nostro_Closed
+            NostroAccCheck ->> Validations: Response
+        Validations ->> ValorCheck: Geri_Valorlu_Control
+            ValorCheck ->> Validations: Response
+        Validations ->> isPayable: check
+            isPayable ->> Validations: Response
+    Validations ->> Order_DB_Storage: insert/Update
+
 
 {
   "type": "excalidraw",
@@ -203,8 +230,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 172396740,
-      "version": 278,
-      "versionNonce": 357819784,
+      "version": 280,
+      "versionNonce": 438985953,
       "isDeleted": false,
       "boundElements": [
         {
@@ -236,7 +263,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -260,11 +287,11 @@ sequenceDiagram
       "index": "a7",
       "roundness": null,
       "seed": 681006204,
-      "version": 246,
-      "versionNonce": 1837854856,
+      "version": 248,
+      "versionNonce": 1069782447,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Incoming\nSwift\nTables",
@@ -299,8 +326,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 876975100,
-      "version": 739,
-      "versionNonce": 1008342510,
+      "version": 740,
+      "versionNonce": 454112751,
       "isDeleted": false,
       "boundElements": [
         {
@@ -314,9 +341,13 @@ sequenceDiagram
         {
           "id": "XsnxGPfHhurVOnqva64rx",
           "type": "arrow"
+        },
+        {
+          "id": "8shD8UcO0fVqGUymlXlZx",
+          "type": "arrow"
         }
       ],
-      "updated": 1731401419788,
+      "updated": 1734432245615,
       "link": null,
       "locked": false
     },
@@ -566,11 +597,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 979475836,
-      "version": 770,
-      "versionNonce": 869135496,
+      "version": 772,
+      "versionNonce": 1076699329,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -622,11 +653,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 139125244,
-      "version": 687,
-      "versionNonce": 908993416,
+      "version": 689,
+      "versionNonce": 2101544911,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -846,11 +877,11 @@ sequenceDiagram
       "index": "aP",
       "roundness": null,
       "seed": 1163610748,
-      "version": 418,
-      "versionNonce": 2133630712,
+      "version": 420,
+      "versionNonce": 841834657,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081705026,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Outbox\nTable",
@@ -1391,11 +1422,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 231298556,
-      "version": 488,
-      "versionNonce": 2058384008,
+      "version": 490,
+      "versionNonce": 1515140591,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -1706,11 +1737,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1522774460,
-      "version": 503,
-      "versionNonce": 940630408,
+      "version": 505,
+      "versionNonce": 500868225,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081702299,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -1762,8 +1793,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 2051391420,
-      "version": 320,
-      "versionNonce": 1744104012,
+      "version": 322,
+      "versionNonce": 1039179791,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1775,7 +1806,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1733914184074,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -1799,11 +1830,11 @@ sequenceDiagram
       "index": "ar",
       "roundness": null,
       "seed": 1198417980,
-      "version": 368,
-      "versionNonce": 1803102200,
+      "version": 370,
+      "versionNonce": 1324641377,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734085080393,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Order Creation Batch\n- Order Enrichment\n- Order Validation\n- GSRP Batch ile ayni kod blogu ile iptal statude kayit atabilir.\n- is no alinmasi",
@@ -1821,8 +1852,8 @@ sequenceDiagram
       "type": "arrow",
       "x": 4356.671962958562,
       "y": 473.7350474585943,
-      "width": 1382.6509122603911,
-      "height": 16.006205377920367,
+      "width": 3040.152385878153,
+      "height": 6.223736925809305,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -1838,11 +1869,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1504623620,
-      "version": 640,
-      "versionNonce": 74456456,
+      "version": 727,
+      "versionNonce": 567838017,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081694332,
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
       "points": [
@@ -1851,8 +1882,8 @@ sequenceDiagram
           0
         ],
         [
-          1382.6509122603911,
-          -16.006205377920367
+          3040.152385878153,
+          6.223736925809305
         ]
       ],
       "lastCommittedPoint": null,
@@ -1875,8 +1906,8 @@ sequenceDiagram
     {
       "id": "DI24-W8SqyZYIephxyEQS",
       "type": "rectangle",
-      "x": 5740.322875218953,
-      "y": 319.4482500663538,
+      "x": 7397.824348836715,
+      "y": 342.6841912839626,
       "width": 153.3333740234375,
       "height": 296,
       "angle": 0,
@@ -1894,8 +1925,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 2046645564,
-      "version": 373,
-      "versionNonce": 1274931704,
+      "version": 466,
+      "versionNonce": 1755853185,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1923,27 +1954,23 @@ sequenceDiagram
           "type": "arrow"
         },
         {
-          "id": "OIvlVZA1X__dW4V4n2j18",
-          "type": "arrow"
-        },
-        {
           "id": "QIpNVNaPGNibVJwFO59wX",
           "type": "arrow"
         },
         {
-          "id": "EVmJKHs5rs9lA_bm7P03E",
+          "id": "OR913vt3bhe3hnNokyDtE",
           "type": "arrow"
         }
       ],
-      "updated": 1734083263878,
+      "updated": 1734434851980,
       "link": null,
       "locked": false
     },
     {
       "id": "pg7jwMlZt4_n-MN2p_Zu_",
       "type": "text",
-      "x": 5767.711569982137,
-      "y": 422.4482500663538,
+      "x": 7425.213043599899,
+      "y": 445.6841912839626,
       "width": 98.55598449707031,
       "height": 90,
       "angle": 0,
@@ -1959,11 +1986,11 @@ sequenceDiagram
       "index": "au",
       "roundness": null,
       "seed": 1721191868,
-      "version": 339,
-      "versionNonce": 1650328568,
+      "version": 425,
+      "versionNonce": 1653102945,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081695403,
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
       "text": "Order\nDB",
@@ -2065,8 +2092,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1051784836,
-      "version": 2786,
-      "versionNonce": 1499093240,
+      "version": 2788,
+      "versionNonce": 2059110433,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2074,7 +2101,7 @@ sequenceDiagram
           "id": "sfxJPViElENz0ULeMe-4-"
         }
       ],
-      "updated": 1734081560198,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -2114,11 +2141,11 @@ sequenceDiagram
       "index": "axV",
       "roundness": null,
       "seed": 1042208388,
-      "version": 16,
-      "versionNonce": 429676823,
+      "version": 18,
+      "versionNonce": 1186547311,
       "isDeleted": false,
-      "boundElements": null,
-      "updated": 1733991251685,
+      "boundElements": [],
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Belirlendi",
@@ -2153,8 +2180,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1225020,
-      "version": 924,
-      "versionNonce": 1194533399,
+      "version": 926,
+      "versionNonce": 288873473,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2162,7 +2189,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1733990030227,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2186,11 +2213,11 @@ sequenceDiagram
       "index": "az",
       "roundness": null,
       "seed": 1047066940,
-      "version": 1003,
-      "versionNonce": 1926547255,
+      "version": 1005,
+      "versionNonce": 600088719,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1733990030228,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Actimize Statu Control\nif swftoActimizeStatu = R (RED) or E (Error = Actimize Kontrolune Takildi)\n    Manuel",
@@ -2206,8 +2233,8 @@ sequenceDiagram
     {
       "id": "09w4XykEPzQg1jV2yY69x",
       "type": "rectangle",
-      "x": 5033.34533554838,
-      "y": 1407.6643563958382,
+      "x": 6690.846809166142,
+      "y": 1430.900297613447,
       "width": 1736.0255526142066,
       "height": 435.69482526735237,
       "angle": 0,
@@ -2225,24 +2252,12 @@ sequenceDiagram
         "type": 3
       },
       "seed": 884184324,
-      "version": 1789,
-      "versionNonce": 678898056,
+      "version": 1933,
+      "versionNonce": 1361961089,
       "isDeleted": false,
       "boundElements": [
         {
-          "id": "rEpO19pgAyW9FyOlFUm2i",
-          "type": "arrow"
-        },
-        {
-          "id": "vM2_gxD1xaWBoZVZFSfbz",
-          "type": "arrow"
-        },
-        {
           "id": "QdKIFEuDYf7gcB-tLGJd6",
-          "type": "arrow"
-        },
-        {
-          "id": "QIpNVNaPGNibVJwFO59wX",
           "type": "arrow"
         },
         {
@@ -2258,15 +2273,15 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734082322038,
+      "updated": 1734434851980,
       "link": null,
       "locked": false
     },
     {
       "id": "cOaLYE1ZSqzjoaAQy7jA6",
       "type": "text",
-      "x": 5243.290838415227,
-      "y": 1548.8658989296441,
+      "x": 6900.792312032989,
+      "y": 1572.101840147253,
       "width": 1436.6396484375,
       "height": 239.92658700227537,
       "angle": 0,
@@ -2282,11 +2297,11 @@ sequenceDiagram
       "index": "b01",
       "roundness": null,
       "seed": 251810948,
-      "version": 1958,
-      "versionNonce": 1299326344,
+      "version": 2095,
+      "versionNonce": 2106082337,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082322038,
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
       "text": "STP NonSTP Decision Batch\n1- Yasal belge gerektirmeyen veya kredi list kontrolu disindaki STP kontrolleri\n2- Yasakli Kelime Kontrolu\n\nUrun Yonetim Ekrani Manuel Aciklama Ekleme, Degistirme, Cikarma",
@@ -2321,11 +2336,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1723178044,
-      "version": 1077,
-      "versionNonce": 1368246425,
+      "version": 1079,
+      "versionNonce": 1834979265,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1733991359182,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2349,11 +2364,11 @@ sequenceDiagram
       "index": "b05",
       "roundness": null,
       "seed": 1118745788,
-      "version": 1246,
-      "versionNonce": 1843088761,
+      "version": 1248,
+      "versionNonce": 1173555407,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1733991359182,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Masak Control\nif SwMasakError = E (EVET = Auto)\nelse Masak Kontrolune Takildi = Manuel",
@@ -2436,10 +2451,10 @@ sequenceDiagram
     {
       "id": "dASNrsJskC6Z1rueFAoBY",
       "type": "arrow",
-      "x": 5841.557799343972,
-      "y": 1414.3534915419145,
-      "width": 13.568216768247112,
-      "height": 802.6499149565645,
+      "x": 7498.9292936887305,
+      "y": 1429.900297613447,
+      "width": 13.35803221883998,
+      "height": 790.2161063294844,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -2455,11 +2470,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1855535620,
-      "version": 3292,
-      "versionNonce": 1169523448,
+      "version": 3605,
+      "versionNonce": 1588367311,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082464897,
+      "updated": 1734434852118,
       "link": null,
       "locked": false,
       "points": [
@@ -2468,20 +2483,20 @@ sequenceDiagram
           0
         ],
         [
-          -13.568216768247112,
-          -802.6499149565645
+          -13.35803221883998,
+          -790.2161063294844
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "09w4XykEPzQg1jV2yY69x",
-        "focus": -0.06450744030716411,
+        "focus": -0.06450744030716385,
         "gap": 1,
         "fixedPoint": null
       },
       "endBinding": {
         "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": -0.10814258358938253,
+        "focus": -0.1081425835893782,
         "gap": 1,
         "fixedPoint": null
       },
@@ -2511,8 +2526,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1536888068,
-      "version": 1304,
-      "versionNonce": 83326600,
+      "version": 1306,
+      "versionNonce": 1867978479,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2520,7 +2535,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734081501051,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2544,11 +2559,11 @@ sequenceDiagram
       "index": "b0D",
       "roundness": null,
       "seed": 1513802884,
-      "version": 1373,
-      "versionNonce": 216102024,
+      "version": 1375,
+      "versionNonce": 645747585,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501051,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Geri Tarihli Valor Control",
@@ -2583,11 +2598,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1735797508,
-      "version": 1621,
-      "versionNonce": 550609800,
+      "version": 1623,
+      "versionNonce": 156524815,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2611,11 +2626,11 @@ sequenceDiagram
       "index": "b0F",
       "roundness": null,
       "seed": 956443268,
-      "version": 1841,
-      "versionNonce": 1155789448,
+      "version": 1843,
+      "versionNonce": 761871201,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "                    Alıcı Kim?\nBeneficiary Customer Enrichment (F59, MX?)\n- (Suan) F59 Beneficiary Customer",
@@ -2631,10 +2646,10 @@ sequenceDiagram
     {
       "id": "_cbtxUX4zxNUmidh-40Ra",
       "type": "arrow",
-      "x": 9586.08763151056,
-      "y": 638.6886701643331,
-      "width": 1409.883720742071,
-      "height": 4.661538782291359,
+      "x": 12147.983992919133,
+      "y": 764.2460221087359,
+      "width": 1.489529781314559,
+      "height": 870.3275708276341,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -2650,11 +2665,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 297392004,
-      "version": 4669,
-      "versionNonce": 344477688,
+      "version": 5811,
+      "versionNonce": 1812200751,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734083267428,
+      "updated": 1734434907797,
       "link": null,
       "locked": false,
       "points": [
@@ -2663,21 +2678,21 @@ sequenceDiagram
           0
         ],
         [
-          1409.883720742071,
-          -4.661538782291359
+          1.489529781314559,
+          870.3275708276341
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
-        "elementId": "1xXeWq1NnTGbUx9JrLiSm",
-        "focus": 0.2658071879841868,
-        "gap": 9.532869615087293,
+        "elementId": "UifKXYQtg3kOPJgymOjjc",
+        "focus": 0.10141076915688901,
+        "gap": 1,
         "fixedPoint": null
       },
       "endBinding": {
         "elementId": "GrSTVqjtxGKtsNpfdczDB",
-        "focus": 0.01612591718712996,
-        "gap": 10.999999999997272,
+        "focus": 0.03793596735983033,
+        "gap": 5.666748046870225,
         "fixedPoint": null
       },
       "startArrowhead": null,
@@ -2687,8 +2702,8 @@ sequenceDiagram
     {
       "id": "GrSTVqjtxGKtsNpfdczDB",
       "type": "rectangle",
-      "x": 11006.971352252629,
-      "y": 491.66526829487725,
+      "x": 11863.989474491462,
+      "y": 1640.2403409832402,
       "width": 550.5652635918467,
       "height": 281.80197033712966,
       "angle": 0,
@@ -2706,8 +2721,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 209227324,
-      "version": 2045,
-      "versionNonce": 1189902984,
+      "version": 2360,
+      "versionNonce": 89130753,
       "isDeleted": false,
       "boundElements": [
         {
@@ -2721,17 +2736,21 @@ sequenceDiagram
         {
           "id": "Z3gBkyKFyS0N9Mss6-Ri6",
           "type": "arrow"
+        },
+        {
+          "id": "OR913vt3bhe3hnNokyDtE",
+          "type": "arrow"
         }
       ],
-      "updated": 1734082419527,
+      "updated": 1734434885488,
       "link": null,
       "locked": false
     },
     {
       "id": "z9JN9Zgew6t9KYwiTndKI",
       "type": "text",
-      "x": 11179.516931649234,
-      "y": 607.2135187097796,
+      "x": 12044.535542169315,
+      "y": 1755.7885913981427,
       "width": 209.95193481445312,
       "height": 45,
       "angle": 0,
@@ -2747,11 +2766,11 @@ sequenceDiagram
       "index": "b0P",
       "roundness": null,
       "seed": 1464035004,
-      "version": 2184,
-      "versionNonce": 683825656,
+      "version": 2495,
+      "versionNonce": 329776769,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082487182,
+      "updated": 1734434885488,
       "link": null,
       "locked": false,
       "text": "Manuel GOE",
@@ -2786,11 +2805,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1142882876,
-      "version": 421,
-      "versionNonce": 1764687240,
+      "version": 423,
+      "versionNonce": 1334351649,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081935892,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2816,11 +2835,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 759341372,
-      "version": 1896,
-      "versionNonce": 8184312,
+      "version": 1898,
+      "versionNonce": 1011394415,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501324,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -2934,11 +2953,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 962887612,
-      "version": 1619,
-      "versionNonce": 481455752,
+      "version": 1621,
+      "versionNonce": 126552833,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -2962,11 +2981,11 @@ sequenceDiagram
       "index": "b0V",
       "roundness": null,
       "seed": 884287548,
-      "version": 1877,
-      "versionNonce": 1081302408,
+      "version": 1879,
+      "versionNonce": 1388306831,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Enrichment",
@@ -3001,11 +3020,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1506417284,
-      "version": 1666,
-      "versionNonce": 1010723976,
+      "version": 1668,
+      "versionNonce": 584319713,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -3029,11 +3048,11 @@ sequenceDiagram
       "index": "b0X",
       "roundness": null,
       "seed": 707537412,
-      "version": 1886,
-      "versionNonce": 1238342536,
+      "version": 1888,
+      "versionNonce": 646633391,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734081501052,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "                    Alıcı Kim?\nBeneficiary Customer Enrichment (F59, MX?)\n- (Suan) F59 Beneficiary Customer",
@@ -3049,8 +3068,8 @@ sequenceDiagram
     {
       "id": "hOINxAEI-y0VnXKqZv9Ll",
       "type": "rectangle",
-      "x": 5351.98706343128,
-      "y": -423.7805050215502,
+      "x": 2295.9871549840145,
+      "y": -535.7803982100268,
       "width": 1127.2814681224484,
       "height": 180.3145215978986,
       "angle": 0,
@@ -3068,8 +3087,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 49802116,
-      "version": 1561,
-      "versionNonce": 135311608,
+      "version": 1667,
+      "versionNonce": 2106499009,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3085,17 +3104,17 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734082317921,
+      "updated": 1734432237300,
       "link": null,
       "locked": false
     },
     {
       "id": "LXWVaSiO-WXXJeiEsrC9j",
       "type": "text",
-      "x": 5490.492593317834,
-      "y": -371.9437355547352,
-      "width": 838.626953125,
-      "height": 111.01571011175609,
+      "x": 2434.492684870568,
+      "y": -487.9435677080555,
+      "width": 774.9573974609375,
+      "height": 55.507855055878046,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3109,39 +3128,30 @@ sequenceDiagram
       "index": "b0Z",
       "roundness": null,
       "seed": 1870125828,
-      "version": 1848,
-      "versionNonce": 514610680,
+      "version": 1958,
+      "versionNonce": 1575073455,
       "isDeleted": false,
-      "boundElements": [
-        {
-          "id": "8shD8UcO0fVqGUymlXlZx",
-          "type": "arrow"
-        },
-        {
-          "id": "OIvlVZA1X__dW4V4n2j18",
-          "type": "arrow"
-        }
-      ],
-      "updated": 1734082453775,
+      "boundElements": [],
+      "updated": 1734432247783,
       "link": null,
       "locked": false,
-      "text": "Transaction Reason Decision Batch\n- Auto Transaction_reason Enrichment",
+      "text": "Transaction Reason Decision Batch",
       "fontSize": 44.40628404470244,
       "fontFamily": 5,
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "Transaction Reason Decision Batch\n- Auto Transaction_reason Enrichment",
+      "originalText": "Transaction Reason Decision Batch",
       "autoResize": true,
       "lineHeight": 1.25
     },
     {
       "id": "rIRU1eyYpH1_tVkWUQBMB",
       "type": "arrow",
-      "x": 5824.585523783372,
-      "y": 612.2815833996871,
-      "width": 12.21899531177587,
-      "height": 797.7161063294847,
+      "x": 7482.150820207345,
+      "y": 639.6841912839626,
+      "width": 12.104114260596361,
+      "height": 790.2161063294844,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3157,11 +3167,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1530053436,
-      "version": 3053,
-      "versionNonce": 936859384,
+      "version": 3364,
+      "versionNonce": 1244311631,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082467241,
+      "updated": 1734434852119,
       "link": null,
       "locked": false,
       "points": [
@@ -3170,20 +3180,20 @@ sequenceDiagram
           0
         ],
         [
-          12.21899531177587,
-          797.7161063294847
+          12.104114260596361,
+          790.2161063294844
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": -0.06812657511559506,
+        "focus": -0.0681265751155894,
         "gap": 1,
         "fixedPoint": null
       },
       "endBinding": {
         "elementId": "09w4XykEPzQg1jV2yY69x",
-        "focus": -0.0702960765348782,
+        "focus": -0.07029607653487792,
         "gap": 1,
         "fixedPoint": null
       },
@@ -3194,10 +3204,10 @@ sequenceDiagram
     {
       "id": "QIpNVNaPGNibVJwFO59wX",
       "type": "arrow",
-      "x": 5890.112506418982,
-      "y": 452.17502659130923,
-      "width": 1314.8159324605786,
-      "height": 38.76283193036102,
+      "x": 7561.050379660053,
+      "y": 451.017585652452,
+      "width": 1136.046687785186,
+      "height": 83.26918088271105,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3213,11 +3223,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 48508220,
-      "version": 4956,
-      "versionNonce": 1795255800,
+      "version": 6092,
+      "versionNonce": 443033743,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734083267428,
+      "updated": 1734434852119,
       "link": null,
       "locked": false,
       "points": [
@@ -3226,21 +3236,21 @@ sequenceDiagram
           0
         ],
         [
-          1314.8159324605786,
-          -38.76283193036102
+          1136.046687785186,
+          -83.26918088271105
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": -0.101296660541431,
-        "gap": 1,
+        "focus": -0.21691286265481538,
+        "gap": 9.892656799900578,
         "fixedPoint": null
       },
       "endBinding": {
         "elementId": "1xXeWq1NnTGbUx9JrLiSm",
-        "focus": 0.11640093089666266,
-        "gap": 3.5610594240642968,
+        "focus": 0.3382966746038399,
+        "gap": 3.5610594240615683,
         "fixedPoint": null
       },
       "startArrowhead": null,
@@ -3269,8 +3279,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 559698052,
-      "version": 2546,
-      "versionNonce": 2006219256,
+      "version": 2548,
+      "versionNonce": 95287279,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3278,7 +3288,7 @@ sequenceDiagram
           "id": "WOJYJX5yrW9-aBhx2UBkk"
         }
       ],
-      "updated": 1734081560198,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -3321,7 +3331,7 @@ sequenceDiagram
       "version": 17,
       "versionNonce": 406812601,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1733991839641,
       "link": null,
       "locked": false,
@@ -3357,8 +3367,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 306904636,
-      "version": 2031,
-      "versionNonce": 1846778360,
+      "version": 2033,
+      "versionNonce": 1849754241,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3366,7 +3376,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734082384922,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -3390,11 +3400,11 @@ sequenceDiagram
       "index": "b0n",
       "roundness": null,
       "seed": 1497880252,
-      "version": 2230,
-      "versionNonce": 787473400,
+      "version": 2232,
+      "versionNonce": 1411850767,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082381425,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Manuel Transaction_reason Set or Edit",
@@ -3429,8 +3439,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 2022196028,
-      "version": 2176,
-      "versionNonce": 943760632,
+      "version": 2178,
+      "versionNonce": 1054804577,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3442,7 +3452,7 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734082381425,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -3466,11 +3476,11 @@ sequenceDiagram
       "index": "b0q",
       "roundness": null,
       "seed": 1905556412,
-      "version": 2395,
-      "versionNonce": 625092600,
+      "version": 2397,
+      "versionNonce": 1781925935,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082381425,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Manuel Transaction_reason Enrichment and Validation",
@@ -3505,8 +3515,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 932935996,
-      "version": 2832,
-      "versionNonce": 679242632,
+      "version": 2834,
+      "versionNonce": 36771393,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3514,7 +3524,7 @@ sequenceDiagram
           "id": "XnbYLEw60JOzIHmlvs9Xo"
         }
       ],
-      "updated": 1734082381491,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -3559,11 +3569,11 @@ sequenceDiagram
       "index": "b0uV",
       "roundness": null,
       "seed": 998156548,
-      "version": 5,
-      "versionNonce": 920144376,
+      "version": 7,
+      "versionNonce": 1170418255,
       "isDeleted": false,
-      "boundElements": null,
-      "updated": 1734082025852,
+      "boundElements": [],
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "5",
@@ -3598,8 +3608,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 2041993404,
-      "version": 2940,
-      "versionNonce": 469088904,
+      "version": 2942,
+      "versionNonce": 1259775521,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3607,7 +3617,7 @@ sequenceDiagram
           "id": "jy1Gh4d244HKMxrUONQAA"
         }
       ],
-      "updated": 1734082381491,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -3652,11 +3662,11 @@ sequenceDiagram
       "index": "b0vV",
       "roundness": null,
       "seed": 659887620,
-      "version": 5,
-      "versionNonce": 2032365960,
+      "version": 7,
+      "versionNonce": 329713775,
       "isDeleted": false,
-      "boundElements": null,
-      "updated": 1734082025852,
+      "boundElements": [],
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "6",
@@ -3691,8 +3701,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1189465020,
-      "version": 2922,
-      "versionNonce": 292366728,
+      "version": 2924,
+      "versionNonce": 612317697,
       "isDeleted": false,
       "boundElements": [
         {
@@ -3700,7 +3710,7 @@ sequenceDiagram
           "id": "FY3an9bg5VdnVoXVybCX6"
         }
       ],
-      "updated": 1734082381491,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "points": [
@@ -3748,7 +3758,7 @@ sequenceDiagram
       "version": 4,
       "versionNonce": 1679505156,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1733827911984,
       "link": null,
       "locked": false,
@@ -3784,11 +3794,11 @@ sequenceDiagram
         "type": 3
       },
       "seed": 882452996,
-      "version": 2492,
-      "versionNonce": 1019240328,
+      "version": 2494,
+      "versionNonce": 1370104463,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082387530,
+      "updated": 1734431255794,
       "link": null,
       "locked": false
     },
@@ -3812,11 +3822,11 @@ sequenceDiagram
       "index": "b13",
       "roundness": null,
       "seed": 124602756,
-      "version": 2716,
-      "versionNonce": 1471500024,
+      "version": 2718,
+      "versionNonce": 258626017,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082381426,
+      "updated": 1734431255794,
       "link": null,
       "locked": false,
       "text": "Approval or Completion etc.",
@@ -3832,10 +3842,10 @@ sequenceDiagram
     {
       "id": "1xXeWq1NnTGbUx9JrLiSm",
       "type": "rectangle",
-      "x": 7208.489498303625,
-      "y": -216.60301606947746,
-      "width": 2368.065263591847,
-      "height": 1355.9686370037975,
+      "x": 8700.658126869303,
+      "y": 75.96642124188111,
+      "width": 2144.0654263522642,
+      "height": 723.9686166587455,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3851,14 +3861,10 @@ sequenceDiagram
         "type": 3
       },
       "seed": 1282128388,
-      "version": 3042,
-      "versionNonce": 1414909176,
+      "version": 3726,
+      "versionNonce": 2015739617,
       "isDeleted": false,
       "boundElements": [
-        {
-          "id": "QIpNVNaPGNibVJwFO59wX",
-          "type": "arrow"
-        },
         {
           "id": "Px5E7kVFcZB68HhaS4wgJ",
           "type": "arrow"
@@ -3866,19 +3872,27 @@ sequenceDiagram
         {
           "id": "_cbtxUX4zxNUmidh-40Ra",
           "type": "arrow"
+        },
+        {
+          "id": "RQ0PwIJxaeuRgEeuyzIEO",
+          "type": "arrow"
+        },
+        {
+          "id": "QIpNVNaPGNibVJwFO59wX",
+          "type": "arrow"
         }
       ],
-      "updated": 1734083267428,
+      "updated": 1734434851980,
       "link": null,
       "locked": false
     },
     {
       "id": "10k_qbGNd744-zuSqg-3v",
       "type": "text",
-      "x": 7237.701744366896,
-      "y": -158.95935826102982,
-      "width": 2205.81591796875,
-      "height": 1218.7078523786233,
+      "x": 8737.957749035377,
+      "y": 120.18945265810464,
+      "width": 1690.5615234375,
+      "height": 256.57007418497335,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3892,35 +3906,30 @@ sequenceDiagram
       "index": "b1C",
       "roundness": null,
       "seed": 644733316,
-      "version": 3718,
-      "versionNonce": 481872520,
+      "version": 4401,
+      "versionNonce": 1973173889,
       "isDeleted": false,
-      "boundElements": [
-        {
-          "id": "EVmJKHs5rs9lA_bm7P03E",
-          "type": "arrow"
-        }
-      ],
-      "updated": 1734085072284,
+      "boundElements": [],
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
-      "text": "Order Execution Batch\n\nOrder Gerceklestirmek icin dis ekip bagimliliklari da burada yer aliyor.\n\nEnrichment\n- Nostroyu bul (FROM NOSTRO)\n- NSDRY\n- GetCommission\n- istatistik kodu alinmasi (TransactionReason requestte gerekebilir)\n\nValidations\n- isPayable\n- check_Nostro_close\n- Geri Valorlu islem mi\n\n\nSTP ise Transfer Creation\n- Transaction_reason tipine depend. Genel Mudurlukte beklet vb ayri muhasebeler var.\n- Enrichment and Validations'da ilgili doviz cinsinde tek hesap varsa direk oraya odeniyor.",
+      "text": "Enrichment\n- CalculateCommission\n- istatistik kodu alinmasi (TransactionReason requestte gerekebilir)\n- Transaction_Reason enrichment",
       "fontSize": 51.314014836994666,
       "fontFamily": 5,
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "Order Execution Batch\n\nOrder Gerceklestirmek icin dis ekip bagimliliklari da burada yer aliyor.\n\nEnrichment\n- Nostroyu bul (FROM NOSTRO)\n- NSDRY\n- GetCommission\n- istatistik kodu alinmasi (TransactionReason requestte gerekebilir)\n\nValidations\n- isPayable\n- check_Nostro_close\n- Geri Valorlu islem mi\n\n\nSTP ise Transfer Creation\n- Transaction_reason tipine depend. Genel Mudurlukte beklet vb ayri muhasebeler var.\n- Enrichment and Validations'da ilgili doviz cinsinde tek hesap varsa direk oraya odeniyor.",
+      "originalText": "Enrichment\n- CalculateCommission\n- istatistik kodu alinmasi (TransactionReason requestte gerekebilir)\n- Transaction_Reason enrichment",
       "autoResize": true,
       "lineHeight": 1.25
     },
     {
       "id": "Px5E7kVFcZB68HhaS4wgJ",
       "type": "arrow",
-      "x": 9577.554761895472,
-      "y": 365.83225264678464,
-      "width": 4957.269152490262,
-      "height": 7.501820634584931,
+      "x": 15931.05599137261,
+      "y": 470.85589829327154,
+      "width": 3800.4561729019297,
+      "height": 131.42454549044186,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -3936,11 +3945,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 881218692,
-      "version": 4493,
-      "versionNonce": 1301343992,
+      "version": 5077,
+      "versionNonce": 1437387169,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734083267428,
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
       "points": [
@@ -3949,21 +3958,21 @@ sequenceDiagram
           0
         ],
         [
-          4957.269152490262,
-          7.501820634584931
+          3800.4561729019297,
+          -131.42454549044186
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
-        "elementId": "1xXeWq1NnTGbUx9JrLiSm",
-        "focus": -0.14319767123470858,
-        "gap": 1,
+        "elementId": "K5KWn40r2RcnVS27pkyE_",
+        "focus": 0.19470224860827642,
+        "gap": 12.007675562316763,
         "fixedPoint": null
       },
       "endBinding": {
         "elementId": "dPsjR3WxFfhTgmg39XALr",
-        "focus": 0.21671211729675594,
-        "gap": 2.4658085939108787,
+        "focus": 0.35078516026784123,
+        "gap": 2.465808593911788,
         "fixedPoint": null
       },
       "startArrowhead": null,
@@ -4047,8 +4056,8 @@ sequenceDiagram
       "type": "arrow",
       "x": 3934.9876135225013,
       "y": 262.6667028871809,
-      "width": 1804.335261696452,
-      "height": 150.87239280307233,
+      "width": 3461.836735314214,
+      "height": 177.38511273930425,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -4064,8 +4073,8 @@ sequenceDiagram
         "type": 2
       },
       "seed": 1764366324,
-      "version": 744,
-      "versionNonce": 1167874952,
+      "version": 829,
+      "versionNonce": 1180100865,
       "isDeleted": false,
       "boundElements": [
         {
@@ -4073,7 +4082,7 @@ sequenceDiagram
           "id": "ezRvQQoXt4cUJu-AXV5Aa"
         }
       ],
-      "updated": 1734081694332,
+      "updated": 1734434851980,
       "link": null,
       "locked": false,
       "points": [
@@ -4082,8 +4091,8 @@ sequenceDiagram
           0
         ],
         [
-          1804.335261696452,
-          150.87239280307233
+          3461.836735314214,
+          177.38511273930425
         ]
       ],
       "lastCommittedPoint": null,
@@ -4126,7 +4135,7 @@ sequenceDiagram
       "version": 140,
       "versionNonce": 890229364,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1733913767633,
       "link": null,
       "locked": false,
@@ -4213,68 +4222,12 @@ sequenceDiagram
       "lineHeight": 1.25
     },
     {
-      "id": "OIvlVZA1X__dW4V4n2j18",
-      "type": "arrow",
-      "x": 6085.419059609489,
-      "y": 35.13480869629262,
-      "width": 560.4801752841495,
-      "height": 5.848699011718892,
-      "angle": 4.703099081153507,
-      "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "strokeStyle": "solid",
-      "roughness": 1,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": null,
-      "index": "b1K",
-      "roundness": {
-        "type": 2
-      },
-      "seed": 980222777,
-      "version": 3278,
-      "versionNonce": 949565432,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1734082454393,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          -560.4801752841495,
-          5.848699011718892
-        ]
-      ],
-      "lastCommittedPoint": null,
-      "startBinding": {
-        "elementId": "LXWVaSiO-WXXJeiEsrC9j",
-        "focus": 0.2668491254028879,
-        "gap": 18.920291025218916,
-        "fixedPoint": null
-      },
-      "endBinding": {
-        "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": -0.04906953141113179,
-        "gap": 1.0543274128231133,
-        "fixedPoint": null
-      },
-      "startArrowhead": null,
-      "endArrowhead": "arrow",
-      "elbowed": false
-    },
-    {
       "id": "8shD8UcO0fVqGUymlXlZx",
       "type": "arrow",
-      "x": 5528.791088994455,
-      "y": 43.83483342577474,
-      "width": 560.7187192652946,
-      "height": 9.54679832912754,
+      "x": 2683.2671844641027,
+      "y": -316.377359900166,
+      "width": 295.15550651143985,
+      "height": 104.49048813277864,
       "angle": 4.703099081153507,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -4290,11 +4243,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 2017080345,
-      "version": 2989,
-      "versionNonce": 1863988728,
+      "version": 3214,
+      "versionNonce": 377177711,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082451816,
+      "updated": 1734432246617,
       "link": null,
       "locked": false,
       "points": [
@@ -4303,23 +4256,18 @@ sequenceDiagram
           0
         ],
         [
-          560.7187192652946,
-          -9.54679832912754
+          295.15550651143985,
+          104.49048813277864
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
-        "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": 0.03410302473782092,
+        "elementId": "ZqEyeMYlvG8EhwjAnVgMD",
+        "focus": -0.2703632156683867,
         "gap": 1,
         "fixedPoint": null
       },
-      "endBinding": {
-        "elementId": "LXWVaSiO-WXXJeiEsrC9j",
-        "focus": 0.2630891303709501,
-        "gap": 19.85744120132,
-        "fixedPoint": null
-      },
+      "endBinding": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": false
@@ -4327,8 +4275,8 @@ sequenceDiagram
     {
       "id": "dPsjR3WxFfhTgmg39XALr",
       "type": "rectangle",
-      "x": 14537.289722979645,
-      "y": 245.0161329905186,
+      "x": 19733.97797286845,
+      "y": 232.02643456538635,
       "width": 202.66670735677147,
       "height": 326.00000000000006,
       "angle": 0,
@@ -4346,8 +4294,8 @@ sequenceDiagram
         "type": 3
       },
       "seed": 168644856,
-      "version": 446,
-      "versionNonce": 393460872,
+      "version": 541,
+      "versionNonce": 721132239,
       "isDeleted": false,
       "boundElements": [
         {
@@ -4363,15 +4311,15 @@ sequenceDiagram
           "type": "arrow"
         }
       ],
-      "updated": 1734082425109,
+      "updated": 1734432471482,
       "link": null,
       "locked": false
     },
     {
       "id": "x_FDQ5mP7nTG2yWixEM9v",
       "type": "text",
-      "x": 14561.719107846997,
-      "y": 363.0161329905186,
+      "x": 19758.407357735803,
+      "y": 350.02643456538635,
       "width": 153.8079376220703,
       "height": 90,
       "angle": 0,
@@ -4387,11 +4335,11 @@ sequenceDiagram
       "index": "b1Q",
       "roundness": null,
       "seed": 120091128,
-      "version": 421,
-      "versionNonce": 1832957432,
+      "version": 513,
+      "versionNonce": 296659457,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082406077,
+      "updated": 1734432471482,
       "link": null,
       "locked": false,
       "text": "Transfer\nDB",
@@ -4407,10 +4355,10 @@ sequenceDiagram
     {
       "id": "Z3gBkyKFyS0N9Mss6-Ri6",
       "type": "arrow",
-      "x": 11554.406191022765,
-      "y": 652.3611376301258,
-      "width": 2981.550387408739,
-      "height": 177.28285024384354,
+      "x": 12415.554738083309,
+      "y": 1767.3517386662766,
+      "width": 1151.804792884277,
+      "height": 964.4683603101216,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -4426,11 +4374,11 @@ sequenceDiagram
         "type": 2
       },
       "seed": 761523704,
-      "version": 4595,
-      "versionNonce": 1412718072,
+      "version": 5165,
+      "versionNonce": 1580231407,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734082427928,
+      "updated": 1734434900217,
       "link": null,
       "locked": false,
       "points": [
@@ -4439,21 +4387,21 @@ sequenceDiagram
           0
         ],
         [
-          2981.550387408739,
-          -177.28285024384354
+          1151.804792884277,
+          -964.4683603101216
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "GrSTVqjtxGKtsNpfdczDB",
-        "focus": 0.22876077562535682,
+        "focus": 0.5857590843190685,
         "gap": 1,
         "fixedPoint": null
       },
       "endBinding": {
-        "elementId": "dPsjR3WxFfhTgmg39XALr",
-        "focus": -0.3606419721072446,
-        "gap": 1.3331445481408082,
+        "elementId": "K5KWn40r2RcnVS27pkyE_",
+        "focus": 0.436625694197307,
+        "gap": 1,
         "fixedPoint": null
       },
       "startArrowhead": null,
@@ -4461,12 +4409,12 @@ sequenceDiagram
       "elbowed": false
     },
     {
-      "id": "EVmJKHs5rs9lA_bm7P03E",
-      "type": "arrow",
-      "x": 7206.744498608152,
-      "y": 425.81798742494186,
-      "width": 1315.1840675394205,
-      "height": 26.226358912167484,
+      "id": "UifKXYQtg3kOPJgymOjjc",
+      "type": "rectangle",
+      "x": 11520.818900625944,
+      "y": 70.79473331622467,
+      "width": 1394.7319302585124,
+      "height": 707.9686573488498,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -4477,16 +4425,180 @@ sequenceDiagram
       "opacity": 100,
       "groupIds": [],
       "frameId": null,
-      "index": "b1S",
+      "index": "b1T",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1534801537,
+      "version": 3530,
+      "versionNonce": 1762953391,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "sHRfuOZ0soghLRW1MtWBB",
+          "type": "arrow"
+        },
+        {
+          "id": "RQ0PwIJxaeuRgEeuyzIEO",
+          "type": "arrow"
+        },
+        {
+          "id": "_cbtxUX4zxNUmidh-40Ra",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1734434879173,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "R2mExFLn8HWmwQSCNC8j7",
+      "type": "text",
+      "x": 11557.200299085038,
+      "y": 124.8536781839448,
+      "width": 541.0638427734375,
+      "height": 256.57007418497335,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1U",
+      "roundness": null,
+      "seed": 1857207905,
+      "version": 4084,
+      "versionNonce": 912029185,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1734434851980,
+      "link": null,
+      "locked": false,
+      "text": "Validations\n- isPayable\n- check_Nostro_close\n- Geri Valorlu islem mi",
+      "fontSize": 51.314014836994666,
+      "fontFamily": 5,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Validations\n- isPayable\n- check_Nostro_close\n- Geri Valorlu islem mi",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "K5KWn40r2RcnVS27pkyE_",
+      "type": "rectangle",
+      "x": 13550.983052218446,
+      "y": 38.32915830894308,
+      "width": 2368.065263591847,
+      "height": 779.9686776939018,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1V",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1438807279,
+      "version": 3609,
+      "versionNonce": 22901903,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "_cbtxUX4zxNUmidh-40Ra",
+          "type": "arrow"
+        },
+        {
+          "id": "Px5E7kVFcZB68HhaS4wgJ",
+          "type": "arrow"
+        },
+        {
+          "id": "sHRfuOZ0soghLRW1MtWBB",
+          "type": "arrow"
+        },
+        {
+          "id": "Z3gBkyKFyS0N9Mss6-Ri6",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1734434897614,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "GD9eakFkA3WbiCL0PXSux",
+      "type": "text",
+      "x": 13580.195298281717,
+      "y": 95.97281611739072,
+      "width": 2205.81591796875,
+      "height": 192.42755563873,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1W",
+      "roundness": null,
+      "seed": 111410959,
+      "version": 4170,
+      "versionNonce": 1989789889,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1734434911831,
+      "link": null,
+      "locked": false,
+      "text": "Transfer Creation\n- Transaction_reason tipine depend. Genel Mudurlukte beklet vb ayri muhasebeler var.\n- Enrichment and Validations'da ilgili doviz cinsinde tek hesap varsa direk oraya odeniyor.",
+      "fontSize": 51.314014836994666,
+      "fontFamily": 5,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "Transfer Creation\n- Transaction_reason tipine depend. Genel Mudurlukte beklet vb ayri muhasebeler var.\n- Enrichment and Validations'da ilgili doviz cinsinde tek hesap varsa direk oraya odeniyor.",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "RQ0PwIJxaeuRgEeuyzIEO",
+      "type": "arrow",
+      "x": 10853.462067111348,
+      "y": 439.9508190683142,
+      "width": 661.4832094788071,
+      "height": 3.6773533381733046,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1X",
       "roundness": {
         "type": 2
       },
-      "seed": 707187960,
-      "version": 5236,
-      "versionNonce": 659437960,
+      "seed": 954433711,
+      "version": 5977,
+      "versionNonce": 2136248527,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1734085072285,
+      "updated": 1734434852119,
       "link": null,
       "locked": false,
       "points": [
@@ -4495,26 +4607,294 @@ sequenceDiagram
           0
         ],
         [
-          -1315.1840675394205,
-          26.226358912167484
+          661.4832094788071,
+          3.6773533381733046
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
-        "elementId": "10k_qbGNd744-zuSqg-3v",
-        "focus": 0.07474052162821292,
-        "gap": 30.95724575874374,
+        "elementId": "1xXeWq1NnTGbUx9JrLiSm",
+        "focus": -0.010893484917408727,
+        "gap": 8.738513889781643,
         "fixedPoint": null
       },
       "endBinding": {
-        "elementId": "DI24-W8SqyZYIephxyEQS",
-        "focus": -0.08626380606651368,
-        "gap": 1,
+        "elementId": "UifKXYQtg3kOPJgymOjjc",
+        "focus": -0.06359616637446987,
+        "gap": 5.873624035788453,
         "fixedPoint": null
       },
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": false
+    },
+    {
+      "id": "sHRfuOZ0soghLRW1MtWBB",
+      "type": "arrow",
+      "x": 12923.644178660192,
+      "y": 421.1048139925217,
+      "width": 618.8165835022464,
+      "height": 4.294008219974671,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1Y",
+      "roundness": {
+        "type": 2
+      },
+      "seed": 373588783,
+      "version": 5858,
+      "versionNonce": 1303047809,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "6QWhJqhheTyfyhejZCZzP"
+        }
+      ],
+      "updated": 1734434903495,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          618.8165835022464,
+          -4.294008219974671
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "UifKXYQtg3kOPJgymOjjc",
+        "focus": 0.0034027316153042502,
+        "gap": 8.09334777573531,
+        "fixedPoint": null
+      },
+      "endBinding": {
+        "elementId": "K5KWn40r2RcnVS27pkyE_",
+        "focus": 0.049668222559376335,
+        "gap": 8.522290056006568,
+        "fixedPoint": null
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false
+    },
+    {
+      "id": "6QWhJqhheTyfyhejZCZzP",
+      "type": "text",
+      "x": 13193.866481031433,
+      "y": 396.4578098825344,
+      "width": 78.37197875976562,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1YV",
+      "roundness": null,
+      "seed": 1157085999,
+      "version": 5,
+      "versionNonce": 36822479,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1734434902067,
+      "link": null,
+      "locked": false,
+      "text": "STP",
+      "fontSize": 36,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "sHRfuOZ0soghLRW1MtWBB",
+      "originalText": "STP",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "uqdDzxYB1_eaUbjR9bOGF",
+      "type": "rectangle",
+      "x": 21208.466990115674,
+      "y": 206.380010440369,
+      "width": 1123.000305175781,
+      "height": 370,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1b",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1753079457,
+      "version": 617,
+      "versionNonce": 171998177,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "u8W60ScaH1xLesQ7P2cDi"
+        }
+      ],
+      "updated": 1734433156244,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "u8W60ScaH1xLesQ7P2cDi",
+      "type": "text",
+      "x": 21496.43924963716,
+      "y": 368.880010440369,
+      "width": 547.0557861328125,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1c",
+      "roundness": null,
+      "seed": 1902862977,
+      "version": 607,
+      "versionNonce": 1477298913,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1734433160145,
+      "link": null,
+      "locked": false,
+      "text": "- NSDRY (INostroDiaryService)",
+      "fontSize": 36,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "uqdDzxYB1_eaUbjR9bOGF",
+      "originalText": "- NSDRY (INostroDiaryService)",
+      "autoResize": true,
+      "lineHeight": 1.25
+    },
+    {
+      "id": "OR913vt3bhe3hnNokyDtE",
+      "type": "arrow",
+      "x": 11862.989474491462,
+      "y": 1749.7370352413507,
+      "width": 4302.812883316008,
+      "height": 1137.6205053078586,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1d",
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1373302735,
+      "version": 5814,
+      "versionNonce": 1562245793,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "mnqw-iyPJHcGSrwHYMjpN"
+        }
+      ],
+      "updated": 1734434885488,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -4302.812883316008,
+          -1137.6205053078586
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "GrSTVqjtxGKtsNpfdczDB",
+        "focus": -0.19487779508279027,
+        "gap": 1,
+        "fixedPoint": null
+      },
+      "endBinding": {
+        "elementId": "DI24-W8SqyZYIephxyEQS",
+        "focus": 0.648771072804785,
+        "gap": 9.018868315301006,
+        "fixedPoint": null
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false
+    },
+    {
+      "id": "mnqw-iyPJHcGSrwHYMjpN",
+      "type": "text",
+      "x": 9231.582115417728,
+      "y": 1193.3640888838881,
+      "width": 263.9879150390625,
+      "height": 90,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "b1dV",
+      "roundness": null,
+      "seed": 661821455,
+      "version": 31,
+      "versionNonce": 1405385793,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1734434815969,
+      "link": null,
+      "locked": false,
+      "text": "Status Update\nGM_WAITING",
+      "fontSize": 36,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "OR913vt3bhe3hnNokyDtE",
+      "originalText": "Status Update\nGM_WAITING",
+      "autoResize": true,
+      "lineHeight": 1.25
     }
   ],
   "appState": {
@@ -4525,3 +4905,4 @@ sequenceDiagram
   },
   "files": {}
 }
+
